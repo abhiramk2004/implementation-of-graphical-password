@@ -1,5 +1,5 @@
 # implementation-of-graphical-password
-These commands should be ran
+These commands should be ran in the directory 
   sudo apt-get install python3-pip 
   python -m venv venv 
   venv\Scripts\activate
