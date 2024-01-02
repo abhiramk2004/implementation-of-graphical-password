@@ -1,0 +1,13 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>SIGN UP</title>
+</head>
+<body><center>
+  {%for user in use%}
+  <h2>username : {{user.username}}  passwordhash : {{user.password_hash}}full_name:{{user.full_name}}age:{{user.age}}other_details:{{user.other_details}}attempt:{{user.attempt}}</h2>
+  {%endfor%}
+</center>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>SIGN UP</title>
+</head>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="flashes">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+<body><center>
+<h3>{{full_name}}</h3><br>
+<h5><u>username :</u>{{username}} </h5>
+<h5><u>age :</u>{{age}} years</h5><br>
+<h5><u>other details :</h5></u><p>{{other_details}}</p></h5>
+<h6><a href="{{url_for("logout",username=session["username"])}}">logout</a></h6>
+</center>
+</body>
+</html>

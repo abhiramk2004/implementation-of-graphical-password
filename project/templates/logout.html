@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>SIGN UP</title>
+</head>
+<body><center>
+    {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="flashes">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+    <h3>{{username}}</h3><br>
+successfully logged out
+<a href="{{url_for("login")}}">login again</a>
+</center>
+</body>
+</html>
