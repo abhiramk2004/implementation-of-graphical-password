@@ -7,16 +7,16 @@ from flask_wtf import FlaskForm,CSRFProtect
 from wtforms import StringField, FileField, IntegerField,SubmitField,TextAreaField
 from wtforms.validators import DataRequired
 import io,secrets
-from flask_bcrypt import Bcrypt
+#from flask_bcrypt import Bcrypt
 from datetime import timedelta
 image_type = ('jpg', 'jpe', 'jpeg', 'png', 'gif', 'svg', 'bmp')
 def is_image(image_type,image_name):
     return image_name.split('.')[-1] in image_type
 def hybrid_hash(image):   
-        phash=imagehash.average_hash(image)
-        diffhash=imagehash.dhash(image)
-        hybrid_hash_value=str(phash)+str(diffhash)
-        return hybrid_hash_value
+    phash=imagehash.phash(image)
+    diffhash=imagehash.dhash(image)
+    hybrid_hash_value=str(phash)+str(diffhash)
+    return hybrid_hash_value
 app=Flask(__name__)
 app.secret_key=secrets.token_hex(32)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.sqlite3"
@@ -24,7 +24,7 @@ app.config["SQLALCHEMY_TRACKS_MODIFICATIONS"] = False
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes = 5)
 
 db=SQLAlchemy(app)
-bcrypt = Bcrypt(app)
+#bcrypt = Bcrypt(app)
 csrf = CSRFProtect(app)
 class Myform(FlaskForm):
     username = StringField('username', validators=[DataRequired()])
@@ -92,7 +92,7 @@ def process1():
         flash('There is some errors in your form filling,kindky resubmit it','error')
         return redirect(url_for('login'))
     username = form.username.data
-    found_user = users.query.filter(text("username = :username")).params(username=username).first()
+    found_user = users.query.filter_by(username=username).first()
     if found_user:
         hash_value = found_user.password_hash
         total_hash = ""
@@ -107,7 +107,7 @@ def process1():
                 file_data = image_file.read()
                 image = Image.open(io.BytesIO(file_data))
                 total_hash += hybrid_hash(image)
-        if bcrypt.check_password_hash(hash_value,total_hash):
+        if hash_value==total_hash:
             flash("Login Succesful","message")
             session["username"]=username
             found_user.attempt=0
@@ -130,7 +130,7 @@ def process2():
         flash('There is some errors in your form filling,kindky resubmit it','error')
         return redirect(url_for('login'))
     username = form.username.data
-    if users.query.filter(text("username = :username")).params(username=username).first():
+    if users.query.filter_by(username=username).first():
          flash("username already exists","error")
          return redirect(url_for("signup"))
     full_name = request.form.get("full_name")
@@ -149,12 +149,11 @@ def process2():
                 image = Image.open(io.BytesIO(file_data))
                 image_list.append(image)
                 total_hash += hybrid_hash(image)
-    password_hash = bcrypt.generate_password_hash(total_hash).decode('utf-8')
-    usr = users(username,password_hash,full_name,age,other_details)
+    #password_hash = bcrypt.generate_password_hash(total_hash).decode('utf-8')
+    usr = users(username,total_hash,full_name,age,other_details)
     db.session.add(usr)
     db.session.commit()
     session['username'] = username
     return redirect(url_for("dashboard",username=username))
 with app.app_context():
     db.create_all()
-app.run(debug=True)
