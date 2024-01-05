@@ -157,3 +157,4 @@ def process2():
     return redirect(url_for("dashboard",username=username))
 with app.app_context():
     db.create_all()
+app.run(debug=True)
